@@ -10,6 +10,9 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+plotly = "==4.11.0"
+numpy = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.8"
