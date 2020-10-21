@@ -12,14 +12,23 @@
     <div class="row">
             <div class="chart" id="bargraph">
                 <script>
-                    var graphs = {{plot| safe}};
-                    // var mat = {{mat| safe}};
+                    var graphs = {{plot| safe}}
                     // console.log(mat);
                     Plotly.plot('bargraph',graphs,{});
                 </script>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="chart" id="heatmap">
+            <script>
+                var mat = {{mat| safe}};
+                // console.log(mat);
+                Plotly.plot('heatmap',mat,{});
+            </script>
+        </div>
+    </div>
+</div>
 </div>
 </body>
 </html

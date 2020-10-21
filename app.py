@@ -37,14 +37,14 @@ class Product(db.Model):
     def __init__(self, date, array, matrix, day):
         self.date = date
         self.array = array
-        self.day = day
         self.matrix = matrix
+        self.day = day
 
 
 # product schema
 class ProductSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'date', 'day', 'array','matrix')
+        fields = ('id', 'date', 'array', 'matrix', 'day')
 
 
 # init schema
@@ -56,10 +56,10 @@ products_schema = ProductSchema(many=True)
 
 @app.route("/d3", methods=["GET"])
 def serveplots():
-    mat = generateMatrixFromString(faskeString())
+    mat = create_heat(faskeString())
     bar = create_plot()
-    
-    return render_template('index.html', plot=bar,mat=mat)
+
+    return render_template('index.html', plot=bar, mat=mat)
 
 
 @app.route("/dummy", methods=['GET'])
@@ -83,7 +83,7 @@ def add_product():
         db.session.delete(selected)
         db.session.commit()
 
-    new_product = Product(date, array, day, matrix)
+    new_product = Product(date, array, matrix, day)
     db.session.add(new_product)
     db.session.commit()
 
@@ -229,20 +229,32 @@ def readFromDataBase(dayOfWeek):
     return y
 
 
-def generateMatrixFromString(stringData):
+def create_heat(stringData):
     """
     takes in string data to generate np array
     """
     lengthOfColumns = len(stringData.split(","))
     x = np.asarray([i for i in range(lengthOfColumns)])
     y = np.asarray([i for i in range(lengthOfColumns)])
-    values = np.asarray([int(re.findall(r'\d+',i)[0]) for i in stringData.split(",")])
+    values = np.asarray([int(re.findall(r'\d+', i)[0])
+                         for i in stringData.split(",")])
 
     df = pd.DataFrame({'x': x, 'y': y, 'values': values})
-    return json.dumps(df.to_dict(orient='records'))
+    data = [
+        go.Heatmap(
+            name="pressureSensorMatrix",
+            x=df['x'],
+            y=df['y'],
+            z=df['values']
+        )]
+
+    return json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+
 def faskeString():
-    val = list(np.random.randint(256,size=736*23))
+    val = list(np.random.randint(256, size=736*23))
     return "','".join(map(str, val))
+
 
 # Run server
 if __name__ == "__main__":
