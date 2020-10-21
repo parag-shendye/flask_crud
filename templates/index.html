@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
     <title>My First Dashboard</title>
 </head>
 <body>
@@ -11,7 +12,9 @@
     <div class="row">
             <div class="chart" id="bargraph">
                 <script>
-                    var graphs = {{plot | safe}};
+                    var graphs = {{plot| safe}};
+                    // var mat = {{mat| safe}};
+                    // console.log(mat);
                     Plotly.plot('bargraph',graphs,{});
                 </script>
             </div>
