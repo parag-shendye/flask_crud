@@ -56,10 +56,15 @@ products_schema = ProductSchema(many=True)
 
 @app.route("/d3", methods=["GET"])
 def serveplots():
-    mat = create_heat(faskeString())
+    product = db.session.query(Product).order_by(Product.id.desc()).first()
+    # product = Product.query.filter_by(id=count).first()
+    # print(count)
+    
+    mat = create_heat(product.matrix)
+    # mat = dummyHeatPlot()
     bar = create_plot()
 
-    return render_template('index.html', plot=bar, mat=mat)
+    return render_template('index.html', plot=bar, mat=mat,day= product.day)
 
 
 @app.route("/dummy", methods=['GET'])
@@ -92,6 +97,7 @@ def add_product():
 
 @app.route('/product', methods=['GET'])
 def getProducts():
+    
     all_products = Product.query.all()
     result = products_schema.dump(all_products)
     return jsonify(result)
@@ -235,22 +241,44 @@ def create_heat(stringData):
     """
     lengthOfColumns = len(stringData.split(","))
     x = np.asarray([i for i in range(lengthOfColumns)])
-    y = np.asarray([i for i in range(lengthOfColumns)])
+    
     values = np.asarray([int(re.findall(r'\d+', i)[0])
                          for i in stringData.split(",")])
-
-    df = pd.DataFrame({'x': x, 'y': y, 'values': values})
-    data = [
+    values =np.interp(values, (values.min(), values.max()), (0, 255))
+    values =np.reshape(values,(23,736))
+    y = values.sum(axis=0)
+    
+    data=[
         go.Heatmap(
-            name="pressureSensorMatrix",
-            x=df['x'],
-            y=df['y'],
-            z=df['values']
-        )]
+            z=values
+        )
+        # go.Scatter(
+        #     x = x,
+        #     y=y,
+        #     mode='markers'
+        # )
+    ]
 
-    return json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
 
+    return graphJSON
 
+def dummyHeatPlot():
+    x = np.asarray([25,25,255,0,255,220,200,166,0,0,0])
+    y = np.asarray([25,25,255,0,255,220,200,166,0,0,0])
+    z = np.asarray([[0,0,0],[255,255,255],[0,0,0]])
+    
+    print(x)
+    print(y)
+
+    data=[go.Heatmap(
+        z = z,
+        )
+    ]
+
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
 def faskeString():
     val = list(np.random.randint(256, size=736*23))
     return "','".join(map(str, val))
@@ -258,4 +286,4 @@ def faskeString():
 
 # Run server
 if __name__ == "__main__":
-    app.run()
+    app.run("0.0.0.0")

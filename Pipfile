@@ -13,6 +13,7 @@ marshmallow-sqlalchemy = "*"
 plotly = "==4.11.0"
 numpy = "*"
 pandas = "*"
+gunicorn = "20.0.4"
 
 [requires]
 python_version = "3.8"

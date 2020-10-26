@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html>
+
 <head lang="en">
     <meta charset="UTF-8">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
-    <title>My First Dashboard</title>
+    <title>DefectLinesDashBoard</title>
 </head>
+
 <body>
-<div class="container">
-    <div class="row">
+    <div class="container">
+        <div class="row">
+            <h2 style="text-align: center;">Histogram of possibly missing lines</h2>
             <div class="chart" id="bargraph">
                 <script>
-                    var graphs = {{plot| safe}}
+                    var graphs = {{ plot| safe}}
                     // console.log(mat);
-                    Plotly.plot('bargraph',graphs,{});
+                    Plotly.plot('bargraph', graphs, {});
                 </script>
             </div>
         </div>
     </div>
     <div class="row">
+        {% if day %}
+        <h2 style="text-align: center;">{{day}}</h2>
+        {% else %}
+        <h2>No result to show</h2>
+        {% endif %}
         <div class="chart" id="heatmap">
             <script>
-                var mat = {{mat| safe}};
-                // console.log(mat);
-                Plotly.plot('heatmap',mat,{});
+                var mat = {{ mat| safe}};
+                Plotly.plot('heatmap', mat, {});
             </script>
         </div>
     </div>
-</div>
-</div>
+    </div>
+    </div>
 </body>
+
 </html
